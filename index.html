@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="src/css/style.css" />
+    <title>Global Covid-19 Tracker</title>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img src="src/img/corona.png" alt="logo" />
+        <h4>COVID-19 <br />TRACKER</h4>
+      </div>
+      <nav>
+        <ul class="navbar">
+          <li><a href="#">HOME</a></li>
+          <li><a href="#">ABOUT</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="graph">
+        <div class="report">
+          <div class="country group">
+            <div class="country-name">loading...</div>
+            <div class="change-country-btn">Change</div>
+            <!-- search country -->
+            <div class="search-country">
+              <div class="search-box">
+                <input
+                  type="text"
+                  id="country-input"
+                  placeholder="Search Country..."
+                />
+                <div id="close">X</div>
+              </div>
+              <div class="country-list">
+                <ul id="list-0">
+                  <li>USA</li>
+                </ul>
+                <ul id="list-1">
+                  <li>USA</li>
+                </ul>
+                <ul id="list-2">
+                  <li>USA</li>
+                  <li>USA</li>
+                </ul>
+              </div>
+            </div>
+            <!---->
+          </div>
+          <div class="total-cases group">
+            <div class="title">Total Cases</div>
+            <div class="value">0</div>
+            <div class="new-value">+0</div>
+          </div>
+          <div class="recovered group">
+            <div class="title">Recovered</div>
+            <div class="value">0</div>
+            <div class="new-value">+0</div>
+          </div>
+          <div class="deaths group">
+            <div class="title">Deaths</div>
+            <div class="value">0</div>
+            <div class="new-value">+0</div>
+          </div>
+        </div>
+
+        <div class="chart">
+          <canvas class="line-chart"> </canvas>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-wraper">
+        <p>Copyright© 2020 All rights reserved</p>
+      </div>
+    </footer>
+  </body>
+</html>
