@@ -229,7 +229,9 @@ countryList.forEach((country, index) => {
   let item = document.createElement("li");
   item.innerText = country.name;
   item.id = country.name;
-  //item.onlick = fetchData(country.name);
+  item.addEventListener("click", function () {
+    fetchData(country.name);
+  });
   document.getElementById(`column${m}`).appendChild(item);
 });
 

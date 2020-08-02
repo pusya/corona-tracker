@@ -134,7 +134,26 @@ main {
 }
 
 .change-country-btn {
+  position: relative;
   cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 10px;
+  color: rgb(128, 126, 126);
+}
+
+.change-country-btn:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0px;
+  height: 3px;
+  width: 128px;
+  border-bottom: 2px solid rgb(128, 126, 126);
+}
+
+.change-country-btn:hover {
+  color: rgb(27, 27, 27);
 }
 
 .title {
@@ -145,9 +164,14 @@ main {
   font-size: 1.2em;
 }
 
+.new-value::before {
+  content: "+";
+}
+
 .value {
   font-size: 1.8em;
   font-weight: bold;
+  padding: 3px 0;
 }
 
 .recovered .value {
@@ -161,12 +185,102 @@ main {
 /*----chart----*/
 
 .chart {
-  width: 75%;
+  width: 70%;
   height: 60vh;
   min-height: 450px;
   padding: 3em 0;
   margin: 0 auto;
-  background-color: rgb(243, 219, 174);
+}
+
+/*----US Table----*/
+
+.table-container {
+  overflow: auto;
+  width: 90%;
+  margin: 0 auto;
+  max-height: 600px;
+  overflow-y: scroll;
+  margin-top: 2em;
+  margin-bottom: 5em;
+}
+
+#state-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th,
+td {
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: rgb(70, 67, 67);
+  color: rgb(233, 232, 232);
+}
+
+tbody {
+  overflow-y: scroll;
+}
+
+/*----scroll bar----*/
+
+/* width */
+.table-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.table-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.table-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/*----map----*/
+#map {
+  width: 100%;
+  height: 40em;
+}
+.marker {
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.marker1 {
+  width: 20px;
+  height: 20px;
+  background-color: rgba(248, 60, 60, 0.2);
+}
+
+.marker2 {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(248, 60, 60, 0.3);
+}
+
+.marker3 {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(248, 60, 60, 0.4);
+}
+
+.marker4 {
+  width: 60px;
+  height: 60px;
+  background-color: rgba(248, 60, 60, 0.6);
 }
 
 /*----footer----*/
