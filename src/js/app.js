@@ -11,18 +11,6 @@ const UI_newDeaths = document.querySelector(".deaths .new-value");
 const UI_countryName = document.querySelector(".country-name");
 const UI_lineChart = document.getElementById("line-chart").getContext("2d");
 
-// get user's country code with geoplugin
-// https://www.geoplugin.com/webservices/javascript
-
-let countryCode = geoplugin_countryCode();
-let countryName;
-
-countryList.forEach((country) => {
-  if (country.code == countryCode) {
-    countryName = country.name;
-  }
-});
-
 //set data variables
 let appData = [],
   casesList = [],
@@ -31,17 +19,10 @@ let appData = [],
   dates = [],
   formatedDates = [];
 
-// set API key and secret
-var APIHost = config.API_HOST;
-var APIKey = config.API_KEY;
-
 // fetch data by country name
-// https://rapidapi.com/astsiatsko/api/covid19-monitor-pro?endpoint=apiendpoint_39899edb-4119-4f87-867f-64e0a5a0acb0
+//https://documenter.getpostman.com/view/10808728/SzS8rjbc?version=latest
 
-var requestOptions = {
-  method: "GET",
-  redirect: "follow",
-};
+fetchData("usa");
 function fetchData(country) {
   // clean previous data saved on the lists
   UI_countryName.innerHTML = "Loading...";
@@ -56,6 +37,7 @@ function fetchData(country) {
         return response.json();
       })
       .then((data) => {
+        console.log(data);
         data.forEach((date) => {
           appData.push(date);
           formatedDates.push(formatDate(date.Date));
@@ -71,8 +53,6 @@ function fetchData(country) {
         console.log(err);
       });
 }
-
-fetchData(countryName);
 
 //repaint UI everytime when new API request is made
 
@@ -189,7 +169,7 @@ function formatDate(dateString) {
 }
 
 ////////////////confirmed cases world map //////
-
+/*
 const mapboxToken =
   "pk.eyJ1Ijoicmhvc3dlbjgyNyIsImEiOiJja2N5MWg4dmIwNW4wMnFxeW1oa3Z1dThtIn0.3jyEzF0c8dNRtAj3rXBUuQ";
 
@@ -241,7 +221,10 @@ fetch("https://covid19-data.p.rapidapi.com/all", {
     console.log(err);
   });
 
-// fetch state data
+  */
+
+// fetch state table data
+
 let statesData = [];
 function fetchStateData() {
   fetch("https://covidtracking.com/api/states", requestOptions)
@@ -249,7 +232,6 @@ function fetchStateData() {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
       data.forEach((state) => {
         statesData.push(state);
       });
@@ -259,37 +241,55 @@ function fetchStateData() {
       statesData.sort((a, b) => b.positive - a.positive);
     })
     .then(() => {
-      drawUSTable();
+      drawUSTable("USdata");
+    })
+    .then(() => drawUSAMap())
+    .then(() => Plotly.newPlot("stateMap", data, layout, config))
+    .catch((err) => {
+      console.log(err);
     });
 }
-
+fetchStateData();
 //draw table
-function drawUSTable() {
-  var tr, td;
-  var tbody = document.getElementById("USdata");
+var tr, td, tbody, stateName;
+function drawUSTable(bodyName) {
+  tbody = document.getElementById(bodyName);
   statesData.forEach((state) => {
+    //create row
     tr = tbody.insertRow(tbody.rows.length);
+    //state name
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
-    td.innerHTML = state.state;
+    statesList.forEach((stateItem) => {
+      if (stateItem.abbreviation == state.state) {
+        stateName = stateItem.name;
+      }
+    });
+    td.innerHTML = stateName;
+    //cases
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = state.positive.toLocaleString();
+    //death
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = state.death.toLocaleString();
+    //death %
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = Number.isNaN(state.death / state.positive)
       ? 0
       : `${((state.death / state.positive) * 100).toFixed(2)}%`;
+    //recovered
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML =
       state.recovered === null ? "NA" : state.recovered.toLocaleString();
+    //tested
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = state.totalTestResults.toLocaleString();
+    //test %
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = `${((state.positive / state.totalTestResults) * 100).toFixed(
@@ -298,4 +298,46 @@ function drawUSTable() {
   });
 }
 
-fetchStateData();
+//////draw map////
+const stateList = [];
+const caseList = [];
+function drawUSAMap() {
+  statesData.forEach((state) => {
+    stateList.push(state.state);
+    caseList.push(state.positive);
+  });
+}
+
+var data = [
+  {
+    type: "choroplethmapbox",
+    name: "US states",
+    geojson:
+      "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/us-states.json",
+    locations: stateList,
+    z: caseList,
+    colorbar: {
+      y: 0,
+      yanchor: "bottom",
+      title: { text: "Cases", side: "top" },
+    },
+  },
+];
+
+var layout = {
+  mapbox: { style: "streets", center: { lon: -95, lat: 38 }, zoom: 3.2 },
+
+  margin: { t: 0, b: 0 },
+  padding: { t: 0, b: 0 },
+  paper_bgcolor: "rgba(0,0,0,0)",
+  plot_bgcolor: "rgba(0,0,0,0)",
+};
+
+var config = {
+  mapboxAccessToken:
+    "pk.eyJ1Ijoicmhvc3dlbjgyNyIsImEiOiJja2N5MWg4dmIwNW4wMnFxeW1oa3Z1dThtIn0.3jyEzF0c8dNRtAj3rXBUuQ",
+  responsive: true,
+  displayModeBar: false,
+  displayLogo: false,
+  scrollZoom: false,
+};

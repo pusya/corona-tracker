@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="src/css/style.css" />
+    <title>Global Covid-19 Tracker</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img src="src/img/corona.png" alt="logo" />
+        <h4>COVID-19 <br />TRACKER</h4>
+      </div>
+      <nav>
+        <ul class="navbar">
+          <li><a href="index.html">USA</a></li>
+          <li><a href="global.html">WORLD</a></li>
+          <li><a href="#">ABOUT</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="map-container">
+        <div id="global">
+          <!-- Plotly chart will be drawn inside this DIV -->
+        </div>
+      </div>
+    </main>
+    <footer>
+      <div class="footer-wraper">
+        <p>Copyright© 2020 All rights reserved</p>
+      </div>
+    </footer>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+      integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      language="JavaScript"
+      src="http://www.geoplugin.net/javascript.gp"
+      type="text/javascript"
+    ></script>
+    <script src="config.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
+    <script src="src/js/states.js"></script>
+    <script src="src/js/global.js"></script>
+  </body>
+</html>
