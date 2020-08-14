@@ -17,7 +17,6 @@ fetch("https://api.covid19api.com/countries", requestOptions)
     data.sort(function (a, b) {
       return a.Country.localeCompare(b.Country);
     });
-
     data.forEach((country) => {
       countriesList.push(country);
     });

@@ -265,12 +265,18 @@ tbody {
 
 /*----USA Map----*/
 .stateMap-container {
-  max-width: 1100px;
+  max-width: 1071px;
   margin: 0 auto;
   padding-bottom: 4em;
 }
 /*----world map----*/
+.worldMap-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-bottom: 4em;
+}
 
+/*markers*/
 .marker {
   border-radius: 50%;
   cursor: pointer;

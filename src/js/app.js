@@ -168,61 +168,6 @@ function formatDate(dateString) {
   return `${date.getDate()} ${months[date.getMonth()]}`;
 }
 
-////////////////confirmed cases world map //////
-/*
-const mapboxToken =
-  "pk.eyJ1Ijoicmhvc3dlbjgyNyIsImEiOiJja2N5MWg4dmIwNW4wMnFxeW1oa3Z1dThtIn0.3jyEzF0c8dNRtAj3rXBUuQ";
-
-function markerColor(count) {
-  if (count <= 5000) {
-    return "marker1";
-  }
-  if (count >= 5000 && count <= 50000) {
-    return "marker2";
-  }
-  if (count >= 50000 && count >= 500000) {
-    return "marker3";
-  } else {
-    return "marker4";
-  }
-}
-mapboxgl.accessToken = mapboxToken;
-var map = new mapboxgl.Map({
-  container: "map",
-  style: "mapbox://styles/mapbox/light-v10",
-  zoom: 1.5,
-  center: [-30, 30],
-});
-
-fetch("https://covid19-data.p.rapidapi.com/all", {
-  method: "GET",
-  headers: {
-    "x-rapidapi-host": "covid19-data.p.rapidapi.com",
-    "x-rapidapi-key": "a23d8a691bmsh760305aadca0fdcp134494jsnfa5f067a8454",
-  },
-})
-  .then((response) => {
-    return response.json();
-  })
-  .then((data) => {
-    data.forEach((country) => {
-      // create a DOM element for the marker
-      var el = document.createElement("div");
-      el.className = `marker + ${markerColor(country.confirmed)}`;
-
-      // add marker to map
-      new mapboxgl.Marker(el)
-        .setLngLat([country.longitude, country.latitude])
-        .addTo(map);
-    });
-  })
-
-  .catch((err) => {
-    console.log(err);
-  });
-
-  */
-
 // fetch state table data
 
 let statesData = [];
@@ -298,7 +243,7 @@ function drawUSTable(bodyName) {
   });
 }
 
-//////draw map////
+//////draw state map////
 const stateList = [];
 const caseList = [];
 function drawUSAMap() {
@@ -317,6 +262,7 @@ var data = [
     locations: stateList,
     z: caseList,
     colorbar: {
+      x: 1,
       y: 0,
       yanchor: "bottom",
       title: { text: "Cases", side: "top" },
@@ -326,7 +272,6 @@ var data = [
 
 var layout = {
   mapbox: { style: "streets", center: { lon: -95, lat: 38 }, zoom: 3.2 },
-
   margin: { t: 0, b: 0 },
   padding: { t: 0, b: 0 },
   paper_bgcolor: "rgba(0,0,0,0)",
@@ -339,5 +284,61 @@ var config = {
   responsive: true,
   displayModeBar: false,
   displayLogo: false,
+  showLink: false,
   scrollZoom: false,
 };
+
+//////draw world map////
+
+var countryList = [],
+  CountryCaseList = [];
+
+fetch("https://api.covid19api.com/summary", requestOptions)
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    console.log(data.Countries);
+    data.Countries.forEach((country) => {
+      countryList.push(country.Country);
+      CountryCaseList.push(country.TotalConfirmed);
+    });
+  })
+  .then(() =>
+    Plotly.d3.csv(
+      "https://raw.githubusercontent.com/plotly/datasets/master/2010_alcohol_consumption_by_country.csv",
+      function () {
+        var data = [
+          {
+            type: "choropleth",
+            locationmode: "country names",
+            locations: countryList,
+            z: CountryCaseList,
+            autocolorscale: true,
+            colorbar: {
+              x: 0.98,
+              y: 0,
+              yanchor: "bottom",
+              title: { text: "Cases", side: "top" },
+            },
+          },
+        ];
+
+        var layout = {
+          title: "Confirmed Cases Worldwise",
+          paper_bgcolor: "rgba(0,0,0,0)",
+          plot_bgcolor: "rgba(0,0,0,0)",
+          margin: { t: 0, b: 0 },
+          padding: { t: 0, b: 0 },
+        };
+
+        var config = {
+          responsive: true,
+          displayModeBar: false,
+          displayLogo: false,
+          showLink: false,
+        };
+        Plotly.newPlot("WorldMap", data, layout, config);
+      }
+    )
+  );
