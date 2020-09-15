@@ -1,5 +1,4 @@
 //select UI elements
-
 const UI_totalCases = document.querySelector(".total-cases .value");
 const UI_recovered = document.querySelector(".recovered .value");
 const UI_deaths = document.querySelector(".deaths .value");
@@ -98,24 +97,27 @@ function drawChart() {
           data: casesList,
           backgroundColor: "red",
           borderColor: "red",
-          borderWidth: 1,
+          borderWidth: 6,
           fill: false,
+          pointRadius: 0,
         },
         {
           label: "Recovered",
           data: recoveredList,
           backgroundColor: "green",
           borderColor: "green",
-          borderWidth: 1,
+          borderWidth: 6,
           fill: false,
+          pointRadius: 0,
         },
         {
           label: "Death",
           data: deathsList,
           backgroundColor: "black",
           borderColor: "black",
-          borderWidth: 1,
+          borderWidth: 6,
           fill: false,
+          pointRadius: 0,
         },
       ],
       labels: formatedDates,
@@ -138,8 +140,15 @@ function drawChart() {
         ],
         yAxes: [
           {
-            gridLines: {
-              display: true,
+            ticks: {
+              // Abbreviate the millions
+              callback: function (value) {
+                if (value > 900000) {
+                  return value / 1e6 + "M";
+                } else {
+                  return value;
+                }
+              },
             },
           },
         ],
@@ -169,10 +178,10 @@ function formatDate(dateString) {
 }
 
 // fetch state table data
-
+//https://rapidapi.com/kotartemiy/api/covid-19-news
 let statesData = [];
 function fetchStateData() {
-  fetch("https://covidtracking.com/api/states", requestOptions)
+  fetch("https://api.covidtracking.com/v1/states/current.json", requestOptions)
     .then((response) => {
       return response.json();
     })
@@ -184,17 +193,16 @@ function fetchStateData() {
     .then(() => {
       //sort states by positive cases
       statesData.sort((a, b) => b.positive - a.positive);
-    })
-    .then(() => {
       drawUSTable("USdata");
+      drawUSAMap();
+      Plotly.newPlot("stateMap", data, layout, configuration);
     })
-    .then(() => drawUSAMap())
-    .then(() => Plotly.newPlot("stateMap", data, layout, config))
     .catch((err) => {
       console.log(err);
     });
 }
 fetchStateData();
+
 //draw table
 var tr, td, tbody, stateName;
 function drawUSTable(bodyName) {
@@ -214,16 +222,19 @@ function drawUSTable(bodyName) {
     //cases
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
-    td.innerHTML = state.positive.toLocaleString();
+    td.innerHTML =
+      state.positive != null
+        ? `${state.positive.toLocaleString()} </br><small style="color: grey">+${state.positiveIncrease.toLocaleString()}</small>`
+        : "NA";
     //death
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
-    td.innerHTML = state.death.toLocaleString();
+    td.innerHTML = `${state.death.toLocaleString()} </br><small style="color: grey">+${state.deathIncrease.toLocaleString()}</small>`;
     //death %
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = Number.isNaN(state.death / state.positive)
-      ? 0
+      ? "NA"
       : `${((state.death / state.positive) * 100).toFixed(2)}%`;
     //recovered
     td = tr.insertCell(tr.cells.length);
@@ -234,6 +245,7 @@ function drawUSTable(bodyName) {
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
     td.innerHTML = state.totalTestResults.toLocaleString();
+    td.innerHTML = `${state.totalTestResults.toLocaleString()}</br><small style="color: grey">+${state.totalTestResultsIncrease.toLocaleString()}</small>`;
     //test %
     td = tr.insertCell(tr.cells.length);
     td.setAttribute("align", "center");
@@ -278,7 +290,7 @@ var layout = {
   plot_bgcolor: "rgba(0,0,0,0)",
 };
 
-var config = {
+var configuration = {
   mapboxAccessToken:
     "pk.eyJ1Ijoicmhvc3dlbjgyNyIsImEiOiJja2N5MWg4dmIwNW4wMnFxeW1oa3Z1dThtIn0.3jyEzF0c8dNRtAj3rXBUuQ",
   responsive: true,
@@ -298,7 +310,7 @@ fetch("https://api.covid19api.com/summary", requestOptions)
     return response.json();
   })
   .then((data) => {
-    console.log(data.Countries);
+    console.log(data);
     data.Countries.forEach((country) => {
       countryList.push(country.Country);
       CountryCaseList.push(country.TotalConfirmed);
@@ -332,13 +344,77 @@ fetch("https://api.covid19api.com/summary", requestOptions)
           padding: { t: 0, b: 0 },
         };
 
-        var config = {
+        var configuration = {
           responsive: true,
           displayModeBar: false,
           displayLogo: false,
           showLink: false,
+          scrollZoom: false,
         };
-        Plotly.newPlot("WorldMap", data, layout, config);
+        Plotly.newPlot("WorldMap", data, layout, configuration);
       }
     )
   );
+
+////////////News///////////
+
+// set API key and secret
+var APIHost = config.API_HOST;
+var APIKey = config.API_KEY;
+var articlesList = [];
+
+fetch(
+  "https://covid-19-news.p.rapidapi.com/v1/covid?lang=en&sort_by=relevancy&page_size=4&media=media&country=us&q=covid",
+  {
+    method: "GET",
+    headers: {
+      "x-rapidapi-host": APIHost,
+      "x-rapidapi-key": APIKey,
+    },
+  }
+)
+  .then((response) => {
+    return response.json();
+  })
+  .then((data) => {
+    data.articles.forEach((article) => {
+      articlesList.push(article);
+    });
+  })
+  .then(() => {
+    let newsWrapper = document.querySelector(".news-wrapper");
+
+    articlesList.forEach((article) => {
+      //create title section
+      let titleWrapper = document.createElement("div");
+      titleWrapper.className = "title-wrapper";
+      let newsTitle = document.createElement("div");
+      newsTitle.className = "news-title";
+      newsTitle.innerHTML = article.title;
+      let source = document.createElement("div");
+      source.className = "source";
+      source.innerHTML = article.clean_url;
+      let date = document.createElement("div");
+      date.className = "date";
+      date.innerHTML = article.published_date;
+      titleWrapper.appendChild(newsTitle);
+      titleWrapper.appendChild(source);
+      titleWrapper.appendChild(date);
+
+      //create content section
+      let contentWrapper = document.createElement("div");
+      contentWrapper.className = "content-wrapper";
+      let summary = document.createElement("div");
+      summary.className = "summary";
+      summary.innerHTML = `<a href=${article.link} target="_blank">${article.summary}</a>`;
+      let media = document.createElement("div");
+      media.className = "media";
+      media.innerHTML = `<img src=${article.media} width="200px" alt="news img"></img>`;
+      contentWrapper.append(summary);
+      contentWrapper.append(media);
+
+      //append to main wrapper
+      newsWrapper.appendChild(titleWrapper);
+      newsWrapper.appendChild(contentWrapper);
+    });
+  });

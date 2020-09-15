@@ -23,9 +23,6 @@ fetch("https://api.covid19api.com/countries", requestOptions)
   })
   .then(() => {
     createUICountryList();
-    console.log(countriesList);
-  })
-  .then(() => {
     getUserCountry();
   });
 
