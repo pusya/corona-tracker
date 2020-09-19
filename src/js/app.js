@@ -36,7 +36,6 @@ function fetchData(country) {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         data.forEach((date) => {
           appData.push(date);
           formatedDates.push(formatDate(date.Date));
@@ -310,7 +309,6 @@ fetch("https://api.covid19api.com/summary", requestOptions)
     return response.json();
   })
   .then((data) => {
-    console.log(data);
     data.Countries.forEach((country) => {
       countryList.push(country.Country);
       CountryCaseList.push(country.TotalConfirmed);

@@ -305,9 +305,9 @@ tbody {
 }
 
 .title-wrapper {
+  margin-top: 5px;
   display: flex;
   align-items: center;
-  margin-top: 20px;
 }
 
 .content-wrapper {
@@ -318,7 +318,8 @@ tbody {
 
 .summary {
   width: 85%;
-  margin-top: 10px;
+  margin-top: 5px;
+  padding-bottom: 15px;
 }
 
 .news-title {

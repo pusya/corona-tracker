@@ -23,22 +23,7 @@ fetch("https://api.covid19api.com/countries", requestOptions)
   })
   .then(() => {
     createUICountryList();
-    getUserCountry();
   });
-
-// get user's country code with geoplugin
-// https://www.geoplugin.com/webservices/javascript
-
-let countryCode = geoplugin_countryCode();
-let countryName;
-
-function getUserCountry() {
-  countriesList.forEach((country) => {
-    if (country.ISO2 == countryCode) {
-      countryName = country.Slug;
-    }
-  });
-}
 
 // select UI elements
 const UI_changeCountryBtn = document.querySelector(".change-country-btn");
